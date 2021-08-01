@@ -11,13 +11,13 @@ pipeline {
         // Github Enironmant Varibales
         GITHUB_CREDENTIALS = 'GitHub'
         GITHUB_URL = 'https://github.com/guchhaitprasun/app_prasunguchhait.git'
-        // GITHUB_BRANCH = 'master'
+        // GITHUB_BRANCH = 'develop'
 
         // Docker Enviornment Variables
         DOCKER_CREDENTIALS = 'DockerHub'
-        DOCKER_REGISTRY = 'prasunguchhait/app-prasunguchhait-' + BRANCH_NAME
-        CONTAINER_NAME = 'c-prasunguchhait-' + BRANCH_NAME
-        DOCKER_PORT = '7200:80'
+        DOCKER_REGISTRY = 'prasunguchhait/app-prasunguchhait-develop'
+        CONTAINER_NAME = 'c-prasunguchhait-develop'
+        DOCKER_PORT = '7300:80'
     }
 
     stages {
@@ -36,19 +36,6 @@ pipeline {
                 echo 'Restoring Nuget Packages'
                 bat 'dotnet restore'
                 echo 'Nuget Pacakges Restored'
-            }
-        }
-
-        //Sonar qube analysis start
-        stage('Start sonarqube analysis') {
-            when {
-                branch 'master'
-            }
-            steps {
-                echo 'Sonar Analysis Begin'
-                withSonarQubeEnv('Test_Sonar') {
-                    bat "${SCANNER_HOME}/SonarScanner.MSBuild.exe begin /k:DevOps_WebAPI /n:DevOps_WebAPI /v:1.0"
-                }
             }
         }
 
@@ -73,10 +60,7 @@ pipeline {
             }
         }
 
-        stage ('Release Artifiact') {
-            when {
-                branch 'develop'
-            }
+         stage ('Release Artifiact') {
             steps {
                 echo 'Publishing Project with Release configuration'
                 bat 'dotnet publish --configuration Release'
@@ -84,21 +68,7 @@ pipeline {
             }
         }
 
-        //Stop sonar qube analysis
-        stage('Stop sonarqube analysis') {
-            when {
-                branch 'master'
-            }
-            steps {
-                echo 'Sonar Analysis Finished'
-                withSonarQubeEnv('Test_Sonar') {
-                    bat "${SCANNER_HOME}/SonarScanner.MSBuild.exe end"
-                }
-            }
-        }
-
-        //Docker Image
-        stage ('Docker Image') {
+         stage ('Docker Image') {
             steps {
                 echo 'Building Docker Image'
                 bat "docker build -t i-${USERNAME}-${BRANCH_NAME} --no-cache -f Dockerfile ."
@@ -106,7 +76,7 @@ pipeline {
             }
         }
 
-        stage('container') {
+        stage('Container') {
             parallel {
                 stage('Pre-Container Check') {
                     steps {
