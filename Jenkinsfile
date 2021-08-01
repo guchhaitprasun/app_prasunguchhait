@@ -5,10 +5,19 @@ pipeline {
 
     environment {
         SCANNER_HOME = tool name: 'sonar_scanner_dotnet'
+        USERNAME = 'prasunguchhait'
+        DOCKER_PREVIOUSDEPLOYMNET_CONTAINER_ID = null
+
         // Github Enironmant Varibales
         GITHUB_CREDENTIALS = 'GitHub'
         GITHUB_URL = 'https://github.com/guchhaitprasun/app_prasunguchhait.git'
         GITHUB_BRANCH = 'master'
+
+        // Docker Enviornment Variables
+        DOCKER_CREDENTIALS = 'DockerHub'
+        DOCKER_REGISTRY = 'prasunguchhait/app-prasunguchhait-master'
+        CONTAINER_NAME = 'app-prasunguchhait-master'
+        DOCKER_PORT = '7200:80'
     }
 
     stages {
@@ -68,6 +77,64 @@ pipeline {
                 withSonarQubeEnv('Test_Sonar') {
                     bat "${SCANNER_HOME}/SonarScanner.MSBuild.exe end"
                 }
+            }
+        }
+
+        //Docker Image
+        stage ('Docker Image') {
+            steps {
+                echo 'Building Docker Image'
+                bat "docker build -t i-${USERNAME}-${GITHUB_BRANCH} --no-cache -f Dockerfile ."
+                echo 'docker Image build complete'
+            }
+        }
+
+        stage('container') {
+            parallel {
+                stage('Pre-Container Check') {
+                    steps {
+                        echo 'Checking if Container is previously deployed'
+                        script {
+                            String dockerCommand = "docker ps -a -q -f name=${CONTAINER_NAME}"
+                            String commandExecution = "${bat(returnStdout: true, script: dockerCommand)}"
+                            DOCKER_PREVIOUSDEPLOYMNET_CONTAINER_ID = "${commandExecution.trim().readLines().drop(1).join(' ')}"
+
+                            if (DOCKER_PREVIOUSDEPLOYMNET_CONTAINER_ID != '') {
+                                echo "Previous Deploymnet Found. Container Id ${DOCKER_PREVIOUSDEPLOYMNET_CONTAINER_ID}"
+
+                                echo "Stopping Container ${DOCKER_PREVIOUSDEPLOYMNET_CONTAINER_ID}"
+                                bat "docker stop ${DOCKER_PREVIOUSDEPLOYMNET_CONTAINER_ID}"
+
+                                echo "Removing Container ${DOCKER_PREVIOUSDEPLOYMNET_CONTAINER_ID}"
+                                bat "docker rm ${DOCKER_PREVIOUSDEPLOYMNET_CONTAINER_ID}"
+                            } else {
+                                echo 'Container Not Deployed Previously'
+                            }
+                        }
+                        echo 'Pre-Container Check Complete'
+                    }
+                }
+
+                stage('Publish to Docker Hub') {
+                    steps {
+                        echo 'Tagging Docker Image'
+                        bat "docker tag i-${USERNAME}-${GITHUB_BRANCH} ${DOCKER_REGISTRY}:${BUILD_NUMBER}"
+                        bat "docker tag i-${USERNAME}-${GITHUB_BRANCH} ${DOCKER_REGISTRY}:latest"
+
+                        echo 'Pushing Image to Docker Hub'
+                        withDockerRegistry([credentialsId: env.DOCKER_CREDENTIALS, url: '']) {
+                            bat "docker push ${DOCKER_REGISTRY}:${BUILD_NUMBER}"
+                            bat "docker push ${DOCKER_REGISTRY}:latest"
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Deploy Docker Image') {
+            steps {
+                echo 'Deploying docker Image'
+                bat "docker run --name ${CONTAINER_NAME} -d -p ${DOCKER_PORT} ${DOCKER_REGISTRY}:${BUILD_NUMBER}"
             }
         }
     }
