@@ -52,15 +52,8 @@ pipeline {
             }
         }
 
-        stage('Unit Testing') {
-            steps {
-                echo 'Begin Unit Testing'
-                bat 'dotnet test DevOps_WebAPI.Test\\DevOps_WebAPI.Test.csproj -l:trx;LogFileName=DevOps_WebAPI_Test.xml'
-                echo 'Unit Testing Finished'
-            }
-        }
-
-         stage ('Release Artifiact') {
+        // Release Artifiacts 
+        stage ('Release Artifiact') {
             steps {
                 echo 'Publishing Project with Release configuration'
                 bat 'dotnet publish --configuration Release'
@@ -68,7 +61,8 @@ pipeline {
             }
         }
 
-         stage ('Docker Image') {
+        //Build Docker Image
+        stage ('Docker Image') {
             steps {
                 echo 'Building Docker Image'
                 bat "docker build -t i-${USERNAME}-${BRANCH_NAME} --no-cache -f Dockerfile ."
@@ -76,6 +70,7 @@ pipeline {
             }
         }
 
+        // Publish  to Docker Hub 
         stage('Container') {
             parallel {
                 stage('Pre-Container Check') {
@@ -118,6 +113,7 @@ pipeline {
             }
         }
 
+        // Deploy Docker Image to Docker 
         stage('Deploy Docker Image') {
             steps {
                 echo 'Deploying docker Image'
