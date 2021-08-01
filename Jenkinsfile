@@ -24,7 +24,7 @@ pipeline {
         // Git checkout
         stage('Checkout') {
             steps {
-                echo 'Pulling latest code from GitHub Branch env.BRANCH_NAME'
+                echo "Pulling latest code from GitHub Branch: ${BRANCH_NAME}"
                 git credentialsId: env.GITHUB_CREDENTIALS, url: env.GITHUB_URL, branch: env.BRANCH_NAME
                 echo 'Git Pull Complete'
             }
@@ -41,9 +41,6 @@ pipeline {
 
         //Sonar qube analysis start
         stage('Start sonarqube analysis') {
-            when {
-                branch 'master'
-            }
             steps {
                 echo 'Sonar Analysis Begin'
                 withSonarQubeEnv('Test_Sonar') {
@@ -65,6 +62,7 @@ pipeline {
             }
         }
 
+        // Start Unit Testing
         stage('Unit Testing') {
             steps {
                 echo 'Begin Unit Testing'
@@ -73,22 +71,8 @@ pipeline {
             }
         }
 
-        stage ('Release Artifiact') {
-            when {
-                branch 'develop'
-            }
-            steps {
-                echo 'Publishing Project with Release configuration'
-                bat 'dotnet publish --configuration Release'
-                echo 'Publish Finished'
-            }
-        }
-
         //Stop sonar qube analysis
         stage('Stop sonarqube analysis') {
-            when {
-                branch 'master'
-            }
             steps {
                 echo 'Sonar Analysis Finished'
                 withSonarQubeEnv('Test_Sonar') {
