@@ -24,7 +24,7 @@ pipeline {
         // Git checkout
         stage('Checkout') {
             steps {
-                echo 'Pulling latest code from GitHub'
+                echo "Pulling latest code from GitHub Branch: ${BRANCH_NAME}"
                 git credentialsId: env.GITHUB_CREDENTIALS, url: env.GITHUB_URL, branch: env.BRANCH_NAME
                 echo 'Git Pull Complete'
             }
