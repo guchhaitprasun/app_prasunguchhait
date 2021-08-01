@@ -30,16 +30,6 @@ pipeline {
             }
         }
 
-        //Sonar qube analysis start
-        stage('Start sonarqube analysis') {
-            steps {
-                echo 'Sonar Analysis Begin'
-                withSonarQubeEnv('Test_Sonar') {
-                    bat "${SCANNER_HOME}/SonarScanner.MSBuild.exe begin /k:DevOps_WebAPI /n:DevOps_WebAPI /v:1.0"
-                }
-            }
-        }
-
         //Clean and Build solution
         stage('Clean & Build') {
             steps {
@@ -58,16 +48,6 @@ pipeline {
                 echo 'Begin Unit Testing'
                 bat 'dotnet test DevOps_WebAPI.Test\\DevOps_WebAPI.Test.csproj -l:trx;LogFileName=DevOps_WebAPI_Test.xml'
                 echo 'Unit Testing Finished'
-            }
-        }
-
-        //Stop sonar qube analysis
-        stage('Stop sonarqube analysis') {
-            steps {
-                echo 'Sonar Analysis Finished'
-                withSonarQubeEnv('Test_Sonar') {
-                    bat "${SCANNER_HOME}/SonarScanner.MSBuild.exe end"
-                }
             }
         }
     }
