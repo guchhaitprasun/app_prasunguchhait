@@ -11,13 +11,13 @@ pipeline {
         // Github Enironmant Varibales
         GITHUB_CREDENTIALS = 'GitHub'
         GITHUB_URL = 'https://github.com/guchhaitprasun/app_prasunguchhait.git'
-        GITHUB_BRANCH = 'develop'
+        // GITHUB_BRANCH = 'master'
 
         // Docker Enviornment Variables
         DOCKER_CREDENTIALS = 'DockerHub'
-        DOCKER_REGISTRY = 'prasunguchhait/app-prasunguchhait-develop'
-        CONTAINER_NAME = 'c-prasunguchhait-develop'
-        DOCKER_PORT = '7300:80'
+        DOCKER_REGISTRY = 'prasunguchhait/app-prasunguchhait-master'
+        CONTAINER_NAME = 'c-prasunguchhait-master'
+        DOCKER_PORT = '7200:80'
     }
 
     stages {
@@ -25,7 +25,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 echo 'Pulling latest code from GitHub'
-                git credentialsId: env.GITHUB_CREDENTIALS, url: env.GITHUB_URL, branch: env.GITHUB_BRANCH
+                git credentialsId: env.GITHUB_CREDENTIALS, url: env.GITHUB_URL, branch: env.BRANCH_NAME
                 echo 'Git Pull Complete'
             }
         }
@@ -36,6 +36,19 @@ pipeline {
                 echo 'Restoring Nuget Packages'
                 bat 'dotnet restore'
                 echo 'Nuget Pacakges Restored'
+            }
+        }
+
+        //Sonar qube analysis start
+        stage('Start sonarqube analysis') {
+            when {
+                branch 'master'
+            }
+            steps {
+                echo 'Sonar Analysis Begin'
+                withSonarQubeEnv('Test_Sonar') {
+                    bat "${SCANNER_HOME}/SonarScanner.MSBuild.exe begin /k:DevOps_WebAPI /n:DevOps_WebAPI /v:1.0"
+                }
             }
         }
 
@@ -60,7 +73,10 @@ pipeline {
             }
         }
 
-         stage ('Release Artifiact') {
+        stage ('Release Artifiact') {
+            when {
+                branch 'develop'
+            }
             steps {
                 echo 'Publishing Project with Release configuration'
                 bat 'dotnet publish --configuration Release'
@@ -68,15 +84,29 @@ pipeline {
             }
         }
 
-         stage ('Docker Image') {
+        //Stop sonar qube analysis
+        stage('Stop sonarqube analysis') {
+            when {
+                branch 'master'
+            }
+            steps {
+                echo 'Sonar Analysis Finished'
+                withSonarQubeEnv('Test_Sonar') {
+                    bat "${SCANNER_HOME}/SonarScanner.MSBuild.exe end"
+                }
+            }
+        }
+
+        //Docker Image
+        stage ('Docker Image') {
             steps {
                 echo 'Building Docker Image'
-                bat "docker build -t i-${USERNAME}-${GITHUB_BRANCH} --no-cache -f Dockerfile ."
+                bat "docker build -t i-${USERNAME}-${BRANCH_NAME} --no-cache -f Dockerfile ."
                 echo 'docker Image build complete'
             }
         }
 
-        stage('Container') {
+        stage('container') {
             parallel {
                 stage('Pre-Container Check') {
                     steps {
@@ -105,8 +135,8 @@ pipeline {
                 stage('Publish to Docker Hub') {
                     steps {
                         echo 'Tagging Docker Image'
-                        bat "docker tag i-${USERNAME}-${GITHUB_BRANCH} ${DOCKER_REGISTRY}:${BUILD_NUMBER}"
-                        bat "docker tag i-${USERNAME}-${GITHUB_BRANCH} ${DOCKER_REGISTRY}:latest"
+                        bat "docker tag i-${USERNAME}-${BRANCH_NAME} ${DOCKER_REGISTRY}:${BUILD_NUMBER}"
+                        bat "docker tag i-${USERNAME}-${BRANCH_NAME} ${DOCKER_REGISTRY}:latest"
 
                         echo 'Pushing Image to Docker Hub'
                         withDockerRegistry([credentialsId: env.DOCKER_CREDENTIALS, url: '']) {
