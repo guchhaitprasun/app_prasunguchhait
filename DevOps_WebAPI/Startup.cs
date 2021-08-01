@@ -26,6 +26,13 @@ namespace DevOps_WebAPI
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddHttpClient();
+            services.AddMvc();
+            services.AddSwaggerGen();
+
+            //Singletone dummy Memory 
+            OneMemory memory = new OneMemory();
+            services.AddSingleton<OneMemory>(memory);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -45,6 +52,11 @@ namespace DevOps_WebAPI
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+            });
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c => {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "NAGP OneAPI Definition");
             });
         }
     }
