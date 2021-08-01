@@ -16,7 +16,7 @@ pipeline {
         // Docker Enviornment Variables
         DOCKER_CREDENTIALS = 'DockerHub'
         DOCKER_REGISTRY = 'prasunguchhait/app-prasunguchhait-develop'
-        CONTAINER_NAME = 'app-prasunguchhait-develop'
+        CONTAINER_NAME = 'c-prasunguchhait-develop'
         DOCKER_PORT = '7300:80'
     }
 
