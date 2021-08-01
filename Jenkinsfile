@@ -35,7 +35,7 @@ pipeline {
             steps {
                 echo 'Sonar Analysis Begin'
                 withSonarQubeEnv('Test_Sonar') {
-                    bat "${SCANNER_HOME}/SonarScanner.MSBuild.exe begin /k:NagpDevopsOne /n:NagpDevopsOne /v:1.0"
+                    bat "${SCANNER_HOME}/SonarScanner.MSBuild.exe begin /k:DevOps_WebAPI /n:DevOps_WebAPI /v:1.0"
                 }
             }
         }
@@ -56,7 +56,7 @@ pipeline {
         stage('Unit Testing') {
             steps {
                 echo 'Begin Unit Testing'
-                bat 'dotnet test NagpDevopsOne.Test\\NagpDevopsOne.Test.csproj -l:trx;LogFileName=NAGPAPITestOutput.xml'
+                bat 'dotnet test DevOps_WebAPI.Test\\DevOps_WebAPI.Test.csproj -l:trx;LogFileName=DevOps_WebAPI_Test.xml'
                 echo 'Unit Testing Finished'
             }
         }
