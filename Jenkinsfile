@@ -15,8 +15,8 @@ pipeline {
 
         // Docker Enviornment Variables
         DOCKER_CREDENTIALS = 'DockerHub'
-        DOCKER_REGISTRY = 'prasunguchhait/app-prasunguchhait-' + env.BRANCH_NAME
-        CONTAINER_NAME = 'c-prasunguchhait-' + env.BRANCH_NAME
+        DOCKER_REGISTRY = 'prasunguchhait/app-prasunguchhait-master'
+        CONTAINER_NAME = 'c-prasunguchhait-master'
         DOCKER_PORT = '7200:80'
     }
 
@@ -24,7 +24,7 @@ pipeline {
         // Git checkout
         stage('Checkout') {
             steps {
-                echo 'Pulling latest code from GitHub'
+                echo 'Pulling latest code from GitHub Branch env.BRANCH_NAME'
                 git credentialsId: env.GITHUB_CREDENTIALS, url: env.GITHUB_URL, branch: env.BRANCH_NAME
                 echo 'Git Pull Complete'
             }
