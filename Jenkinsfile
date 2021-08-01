@@ -15,8 +15,8 @@ pipeline {
 
         // Docker Enviornment Variables
         DOCKER_CREDENTIALS = 'DockerHub'
-        DOCKER_REGISTRY = 'prasunguchhait/app-prasunguchhait-master'
-        CONTAINER_NAME = 'c-prasunguchhait-master'
+        DOCKER_REGISTRY = 'prasunguchhait/app-prasunguchhait-' + BRANCH_NAME
+        CONTAINER_NAME = 'c-prasunguchhait-' + BRANCH_NAME
         DOCKER_PORT = '7200:80'
     }
 
