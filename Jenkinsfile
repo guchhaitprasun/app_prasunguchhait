@@ -44,7 +44,7 @@ pipeline {
             steps {
                 echo 'Sonar Analysis Begin'
                 withSonarQubeEnv('Test_Sonar') {
-                    bat "${SCANNER_HOME}/SonarScanner.MSBuild.exe begin /k:NagpDevopsOne /d:sonar.cs.opencover.reportsPaths=NagpDevopsOne.Test/coverage.opencover.xml /d:sonar.coverage.exclusions='**Test*.cs'"
+                    bat "${SCANNER_HOME}/SonarScanner.MSBuild.exe begin /k:DevOps_WebAPI /d:sonar.cs.opencover.reportsPaths=DevOps_WebAPI.Test/coverage.opencover.xml /d:sonar.coverage.exclusions='**Test*.cs'"
                 }
             }
         }
