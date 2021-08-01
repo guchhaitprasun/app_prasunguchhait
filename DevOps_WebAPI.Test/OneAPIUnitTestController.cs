@@ -103,5 +103,58 @@ namespace DevOps_WebAPI.Test
             Assert.NotNull(statusResult);
             Assert.Equal(200, statusResult.StatusCode);
         }
+
+        [Fact]
+        public void Task_GetUserById_Return_BadResult()
+        {
+            //Arrange  
+            OneAPIController controller = new OneAPIController(option);
+            int userId = int.MinValue;
+
+            //Act  
+            IActionResult result = controller.Get(userId);
+            var statusResult = result as BadRequestResult;
+
+            //Assert  
+            Assert.Equal(400, statusResult.StatusCode);
+        }
+
+        [Fact]
+        public void Task_UpdateUser_Return_BadResult()
+        {
+            //Arrange  
+            OneAPIController controller = new OneAPIController(option);
+            OneModel user = new OneModel();
+            user.UserId = 1;
+            user.UserName = "NAGP User";
+            user.EmailAddress = "2021Nagp@nagp.com";
+            user.PhoneNo = "999999999";
+
+            int unserId = int.MinValue;
+
+            //Act  
+            IActionResult result = controller.Put(unserId, user);
+            var statusResult = result as BadRequestResult;
+
+            //Assert  
+            Assert.NotNull(statusResult);
+            Assert.Equal(400, statusResult.StatusCode);
+        }
+
+        [Fact]
+        public void Task_DeleteUser_Return_BadResult()
+        {
+            //Arrange  
+            OneAPIController controller = new OneAPIController(option);
+            var UserId = int.MinValue;
+
+            //Act  
+            IActionResult result = controller.Delete(UserId);
+            var statusResult = result as BadRequestResult;
+
+            //Assert  
+            Assert.NotNull(statusResult);
+            Assert.Equal(400, statusResult.StatusCode);
+        }
     }
 }
