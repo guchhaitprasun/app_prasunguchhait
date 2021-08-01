@@ -13,7 +13,7 @@ namespace DevOps_WebAPI.Controllers
     public class OneAPIController : ControllerBase
     {
 
-        OneMemory memory;
+        readonly OneMemory memory;
         public OneAPIController(IOptions<OneMemory> options)
         {
             memory = options.Value;
@@ -30,7 +30,7 @@ namespace DevOps_WebAPI.Controllers
         [HttpGet, Route("get/{id}")]
         public IActionResult Get(int id)
         {
-            OneModel oneModels = memory.UsersList.Where(o => o.UserId == id).FirstOrDefault();
+            OneModel oneModels = memory.UsersList.FirstOrDefault(o => o.UserId == id);
             if (oneModels != null)
             {
                 return Ok(oneModels);
@@ -64,7 +64,7 @@ namespace DevOps_WebAPI.Controllers
         {
             try
             {
-                OneModel oneModels = memory.UsersList.Where(o => o.UserId == id).FirstOrDefault();
+                OneModel oneModels = memory.UsersList.FirstOrDefault(o => o.UserId == id);
                 if (oneModels != null)
                 {
                     oneModels.UserName = value.UserName;
@@ -87,7 +87,7 @@ namespace DevOps_WebAPI.Controllers
         [HttpDelete, Route("get/{id}")]
         public IActionResult Delete(int id)
         {
-            OneModel oneModels = memory.UsersList.Where(o => o.UserId == id).FirstOrDefault();
+            OneModel oneModels = memory.UsersList.FirstOrDefault(o => o.UserId == id);
             if (oneModels != null)
             {
                 memory.UsersList.Remove(oneModels);
