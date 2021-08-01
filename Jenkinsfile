@@ -11,7 +11,7 @@ pipeline {
         // Github Enironmant Varibales
         GITHUB_CREDENTIALS = 'GitHub'
         GITHUB_URL = 'https://github.com/guchhaitprasun/app_prasunguchhait.git'
-        GITHUB_BRANCH = 'master'
+        // GITHUB_BRANCH = 'master'
 
         // Docker Enviornment Variables
         DOCKER_CREDENTIALS = 'DockerHub'
@@ -25,7 +25,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 echo 'Pulling latest code from GitHub'
-                git credentialsId: env.GITHUB_CREDENTIALS, url: env.GITHUB_URL, branch: env.GITHUB_BRANCH
+                git credentialsId: env.GITHUB_CREDENTIALS, url: env.GITHUB_URL, branch: env.BRANCH_NAME
                 echo 'Git Pull Complete'
             }
         }
@@ -41,6 +41,9 @@ pipeline {
 
         //Sonar qube analysis start
         stage('Start sonarqube analysis') {
+            when {
+                branch 'master'
+            }
             steps {
                 echo 'Sonar Analysis Begin'
                 withSonarQubeEnv('Test_Sonar') {
@@ -70,8 +73,22 @@ pipeline {
             }
         }
 
+        stage ('Release Artifiact') {
+            when {
+                branch 'develop'
+            }
+            steps {
+                echo 'Publishing Project with Release configuration'
+                bat 'dotnet publish --configuration Release'
+                echo 'Publish Finished'
+            }
+        }
+
         //Stop sonar qube analysis
         stage('Stop sonarqube analysis') {
+            when {
+                branch 'master'
+            }
             steps {
                 echo 'Sonar Analysis Finished'
                 withSonarQubeEnv('Test_Sonar') {
@@ -84,7 +101,7 @@ pipeline {
         stage ('Docker Image') {
             steps {
                 echo 'Building Docker Image'
-                bat "docker build -t i-${USERNAME}-${GITHUB_BRANCH} --no-cache -f Dockerfile ."
+                bat "docker build -t i-${USERNAME}-${BRANCH_NAME} --no-cache -f Dockerfile ."
                 echo 'docker Image build complete'
             }
         }
@@ -118,8 +135,8 @@ pipeline {
                 stage('Publish to Docker Hub') {
                     steps {
                         echo 'Tagging Docker Image'
-                        bat "docker tag i-${USERNAME}-${GITHUB_BRANCH} ${DOCKER_REGISTRY}:${BUILD_NUMBER}"
-                        bat "docker tag i-${USERNAME}-${GITHUB_BRANCH} ${DOCKER_REGISTRY}:latest"
+                        bat "docker tag i-${USERNAME}-${BRANCH_NAME} ${DOCKER_REGISTRY}:${BUILD_NUMBER}"
+                        bat "docker tag i-${USERNAME}-${BRANCH_NAME} ${DOCKER_REGISTRY}:latest"
 
                         echo 'Pushing Image to Docker Hub'
                         withDockerRegistry([credentialsId: env.DOCKER_CREDENTIALS, url: '']) {
