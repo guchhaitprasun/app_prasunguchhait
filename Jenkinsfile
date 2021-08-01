@@ -76,7 +76,7 @@ pipeline {
             }
         }
 
-         stage('Container') {
+        stage('Container') {
             parallel {
                 stage('Pre-Container Check') {
                     steps {
@@ -115,13 +115,13 @@ pipeline {
                         }
                     }
                 }
+            }
+        }
 
-                stage('Deploy Docker Image') {
-                    steps {
-                        echo 'Deploying docker Image'
-                        bat "docker run --name ${CONTAINER_NAME} -d -p ${DOCKER_PORT} ${DOCKER_REGISTRY}:${BUILD_NUMBER}"
-                    }
-                }
+        stage('Deploy Docker Image') {
+            steps {
+                echo 'Deploying docker Image'
+                bat "docker run --name ${CONTAINER_NAME} -d -p ${DOCKER_PORT} ${DOCKER_REGISTRY}:${BUILD_NUMBER}"
             }
         }
     }
