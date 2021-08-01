@@ -204,11 +204,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\NAGP\\D_DevOps\\DevopsFinalHomeAssignment\\app_prasunguchhait\\DevOps_WebAPI\\DevOps_WebAPI.csproj",
+      "projectUniqueName": "D:\\NAGP\\D_DevOps\\FinalHomeAssignment\\app_prasunguchhait\\DevOps_WebAPI\\DevOps_WebAPI.csproj",
       "projectName": "DevOps_WebAPI",
-      "projectPath": "D:\\NAGP\\D_DevOps\\DevopsFinalHomeAssignment\\app_prasunguchhait\\DevOps_WebAPI\\DevOps_WebAPI.csproj",
+      "projectPath": "D:\\NAGP\\D_DevOps\\FinalHomeAssignment\\app_prasunguchhait\\DevOps_WebAPI\\DevOps_WebAPI.csproj",
       "packagesPath": "C:\\Users\\prasunguchhait.NAGARRO\\.nuget\\packages\\",
-      "outputPath": "D:\\NAGP\\D_DevOps\\DevopsFinalHomeAssignment\\app_prasunguchhait\\DevOps_WebAPI\\obj\\",
+      "outputPath": "D:\\NAGP\\D_DevOps\\FinalHomeAssignment\\app_prasunguchhait\\DevOps_WebAPI\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\prasunguchhait.NAGARRO\\AppData\\Roaming\\NuGet\\NuGet.Config",

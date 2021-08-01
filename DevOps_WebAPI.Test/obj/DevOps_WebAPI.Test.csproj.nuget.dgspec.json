@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\NAGP\\D_DevOps\\DevopsFinalHomeAssignment\\app_prasunguchhait\\DevOps_WebAPI.Test\\DevOps_WebAPI.Test.csproj": {}
+    "D:\\NAGP\\D_DevOps\\FinalHomeAssignment\\app_prasunguchhait\\DevOps_WebAPI.Test\\DevOps_WebAPI.Test.csproj": {}
   },
   "projects": {
-    "D:\\NAGP\\D_DevOps\\DevopsFinalHomeAssignment\\app_prasunguchhait\\DevOps_WebAPI.Test\\DevOps_WebAPI.Test.csproj": {
+    "D:\\NAGP\\D_DevOps\\FinalHomeAssignment\\app_prasunguchhait\\DevOps_WebAPI.Test\\DevOps_WebAPI.Test.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\NAGP\\D_DevOps\\DevopsFinalHomeAssignment\\app_prasunguchhait\\DevOps_WebAPI.Test\\DevOps_WebAPI.Test.csproj",
+        "projectUniqueName": "D:\\NAGP\\D_DevOps\\FinalHomeAssignment\\app_prasunguchhait\\DevOps_WebAPI.Test\\DevOps_WebAPI.Test.csproj",
         "projectName": "DevOps_WebAPI.Test",
-        "projectPath": "D:\\NAGP\\D_DevOps\\DevopsFinalHomeAssignment\\app_prasunguchhait\\DevOps_WebAPI.Test\\DevOps_WebAPI.Test.csproj",
+        "projectPath": "D:\\NAGP\\D_DevOps\\FinalHomeAssignment\\app_prasunguchhait\\DevOps_WebAPI.Test\\DevOps_WebAPI.Test.csproj",
         "packagesPath": "C:\\Users\\prasunguchhait.NAGARRO\\.nuget\\packages\\",
-        "outputPath": "D:\\NAGP\\D_DevOps\\DevopsFinalHomeAssignment\\app_prasunguchhait\\DevOps_WebAPI.Test\\obj\\",
+        "outputPath": "D:\\NAGP\\D_DevOps\\FinalHomeAssignment\\app_prasunguchhait\\DevOps_WebAPI.Test\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\prasunguchhait.NAGARRO\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -28,8 +28,8 @@
           "netcoreapp3.1": {
             "targetAlias": "netcoreapp3.1",
             "projectReferences": {
-              "D:\\NAGP\\D_DevOps\\DevopsFinalHomeAssignment\\app_prasunguchhait\\DevOps_WebAPI\\DevOps_WebAPI.csproj": {
-                "projectPath": "D:\\NAGP\\D_DevOps\\DevopsFinalHomeAssignment\\app_prasunguchhait\\DevOps_WebAPI\\DevOps_WebAPI.csproj"
+              "D:\\NAGP\\D_DevOps\\FinalHomeAssignment\\app_prasunguchhait\\DevOps_WebAPI\\DevOps_WebAPI.csproj": {
+                "projectPath": "D:\\NAGP\\D_DevOps\\FinalHomeAssignment\\app_prasunguchhait\\DevOps_WebAPI\\DevOps_WebAPI.csproj"
               }
             }
           }
@@ -55,6 +55,12 @@
             "coverlet.collector": {
               "target": "Package",
               "version": "[1.2.0, )"
+            },
+            "coverlet.msbuild": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[3.1.0, )"
             },
             "xunit": {
               "target": "Package",
@@ -84,14 +90,14 @@
         }
       }
     },
-    "D:\\NAGP\\D_DevOps\\DevopsFinalHomeAssignment\\app_prasunguchhait\\DevOps_WebAPI\\DevOps_WebAPI.csproj": {
+    "D:\\NAGP\\D_DevOps\\FinalHomeAssignment\\app_prasunguchhait\\DevOps_WebAPI\\DevOps_WebAPI.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\NAGP\\D_DevOps\\DevopsFinalHomeAssignment\\app_prasunguchhait\\DevOps_WebAPI\\DevOps_WebAPI.csproj",
+        "projectUniqueName": "D:\\NAGP\\D_DevOps\\FinalHomeAssignment\\app_prasunguchhait\\DevOps_WebAPI\\DevOps_WebAPI.csproj",
         "projectName": "DevOps_WebAPI",
-        "projectPath": "D:\\NAGP\\D_DevOps\\DevopsFinalHomeAssignment\\app_prasunguchhait\\DevOps_WebAPI\\DevOps_WebAPI.csproj",
+        "projectPath": "D:\\NAGP\\D_DevOps\\FinalHomeAssignment\\app_prasunguchhait\\DevOps_WebAPI\\DevOps_WebAPI.csproj",
         "packagesPath": "C:\\Users\\prasunguchhait.NAGARRO\\.nuget\\packages\\",
-        "outputPath": "D:\\NAGP\\D_DevOps\\DevopsFinalHomeAssignment\\app_prasunguchhait\\DevOps_WebAPI\\obj\\",
+        "outputPath": "D:\\NAGP\\D_DevOps\\FinalHomeAssignment\\app_prasunguchhait\\DevOps_WebAPI\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\prasunguchhait.NAGARRO\\AppData\\Roaming\\NuGet\\NuGet.Config",

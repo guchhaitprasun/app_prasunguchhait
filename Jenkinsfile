@@ -44,7 +44,7 @@ pipeline {
             steps {
                 echo 'Sonar Analysis Begin'
                 withSonarQubeEnv('Test_Sonar') {
-                    bat "${SCANNER_HOME}/SonarScanner.MSBuild.exe begin /k:DevOps_WebAPI /n:DevOps_WebAPI /v:1.0"
+                    bat "${SCANNER_HOME}/SonarScanner.MSBuild.exe begin /k:NagpDevopsOne /d:sonar.cs.opencover.reportsPaths=NagpDevopsOne.Test/coverage.opencover.xml /d:sonar.coverage.exclusions='**Test*.cs'"
                 }
             }
         }
@@ -66,7 +66,7 @@ pipeline {
         stage('Unit Testing') {
             steps {
                 echo 'Begin Unit Testing'
-                bat 'dotnet test DevOps_WebAPI.Test\\DevOps_WebAPI.Test.csproj -l:trx;LogFileName=DevOps_WebAPI_Test.xml'
+                bat 'dotnet test DevOps_WebAPI.Test\\DevOps_WebAPI.Test.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=opencover'
                 echo 'Unit Testing Finished'
             }
         }
