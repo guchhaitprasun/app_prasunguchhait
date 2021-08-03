@@ -15,9 +15,11 @@ pipeline {
 
         // Docker Enviornment Variables
         DOCKER_CREDENTIALS = 'DockerHub'
-        DOCKER_REGISTRY = 'prasunguchhait/app-prasunguchhait-master'
-        CONTAINER_NAME = 'c-prasunguchhait-master'
-        DOCKER_PORT = '7200:80'
+        DOCKER_REGISTRY = 'prasunguchhait/app-prasunguchhait'
+        DOCKER_CONTAINER_NAME = 'c-prasunguchhait'
+        DOCKER_PORT = null
+        DOCKER_PORT_MASTER = '7200:80'
+        DOCKER_PORT_DEVELOP = '7300:80'
     }
 
     stages {
@@ -41,6 +43,10 @@ pipeline {
 
         //Sonar qube analysis start
         stage('Start sonarqube analysis') {
+            when {
+                branch 'master'
+            }
+
             steps {
                 echo 'Sonar Analysis Begin'
                 withSonarQubeEnv('Test_Sonar') {
@@ -62,8 +68,25 @@ pipeline {
             }
         }
 
+        // Release Artifiacts
+        stage ('Release Artifiact') {
+            when {
+                branch 'develop'
+            }
+
+            steps {
+                echo 'Publishing Project with Release configuration'
+                bat 'dotnet publish --configuration Release'
+                echo 'Publish Finished'
+            }
+        }
+
         // Start Unit Testing
         stage('Unit Testing') {
+            when {
+                branch 'master'
+            }
+            
             steps {
                 echo 'Begin Unit Testing'
                 bat 'dotnet test DevOps_WebAPI.Test\\DevOps_WebAPI.Test.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=opencover'
@@ -73,6 +96,10 @@ pipeline {
 
         //Stop sonar qube analysis
         stage('Stop sonarqube analysis') {
+            when {
+                branch 'master'
+            }
+
             steps {
                 echo 'Sonar Analysis Finished'
                 withSonarQubeEnv('Test_Sonar') {
@@ -96,7 +123,7 @@ pipeline {
                     steps {
                         echo 'Checking if Container is previously deployed'
                         script {
-                            String dockerCommand = "docker ps -a -q -f name=${CONTAINER_NAME}"
+                            String dockerCommand = "docker ps -a -q -f name=${DOCKER_CONTAINER_NAME}-${BRANCH_NAME}"
                             String commandExecution = "${bat(returnStdout: true, script: dockerCommand)}"
                             DOCKER_PREVIOUSDEPLOYMNET_CONTAINER_ID = "${commandExecution.trim().readLines().drop(1).join(' ')}"
 
@@ -119,13 +146,13 @@ pipeline {
                 stage('Publish to Docker Hub') {
                     steps {
                         echo 'Tagging Docker Image'
-                        bat "docker tag i-${USERNAME}-${BRANCH_NAME} ${DOCKER_REGISTRY}:${BUILD_NUMBER}"
-                        bat "docker tag i-${USERNAME}-${BRANCH_NAME} ${DOCKER_REGISTRY}:latest"
+                        bat "docker tag i-${USERNAME}-${BRANCH_NAME} ${DOCKER_REGISTRY}-${BRANCH_NAME}:${BUILD_NUMBER}"
+                        bat "docker tag i-${USERNAME}-${BRANCH_NAME} ${DOCKER_REGISTRY}-${BRANCH_NAME}:latest"
 
                         echo 'Pushing Image to Docker Hub'
                         withDockerRegistry([credentialsId: env.DOCKER_CREDENTIALS, url: '']) {
-                            bat "docker push ${DOCKER_REGISTRY}:${BUILD_NUMBER}"
-                            bat "docker push ${DOCKER_REGISTRY}:latest"
+                            bat "docker push ${DOCKER_REGISTRY}-${BRANCH_NAME}:${BUILD_NUMBER}"
+                            bat "docker push ${DOCKER_REGISTRY}-${BRANCH_NAME}:latest"
                         }
                     }
                 }
@@ -134,8 +161,15 @@ pipeline {
 
         stage('Deploy Docker Image') {
             steps {
-                echo 'Deploying docker Image'
-                bat "docker run --name ${CONTAINER_NAME} -d -p ${DOCKER_PORT} ${DOCKER_REGISTRY}:${BUILD_NUMBER}"
+                script {
+                    if (env.BRANCH_NAME == 'master'){
+                        DOCKER_PORT = DOCKER_PORT_MASTER
+                    } else {
+                        DOCKER_PORT = DOCKER_PORT_DEVELOP
+                    }
+                }
+                echo "Deploying docker Image ${DOCKER_PORT}"
+                bat "docker run --name ${DOCKER_CONTAINER_NAME}-${BRANCH_NAME} -d -p ${DOCKER_PORT} ${DOCKER_REGISTRY}-${BRANCH_NAME}:${BUILD_NUMBER}"
             }
         }
     }
