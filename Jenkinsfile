@@ -6,7 +6,6 @@ pipeline {
     environment {
         SCANNER_HOME = tool name: 'sonar_scanner_dotnet'
         USERNAME = 'prasunguchhait'
-        DOCKER_PREVIOUSDEPLOYMNET_CONTAINER_ID = null
 
         // Github Enironmant Varibales
         GITHUB_CREDENTIALS = 'GitHub'
@@ -131,16 +130,16 @@ pipeline {
                         script {
                             String dockerCommand = "docker ps -a -q -f name=${DOCKER_CONTAINER_NAME}-${BRANCH_NAME}"
                             String commandExecution = "${bat(returnStdout: true, script: dockerCommand)}"
-                            env.DOCKER_PREVIOUSDEPLOYMNET_CONTAINER_ID = "${commandExecution.trim().readLines().drop(1).join(' ')}"
+                            dockerPreviousDeploymentContainerId = "${commandExecution.trim().readLines().drop(1).join(' ')}"
 
-                            if (env.DOCKER_PREVIOUSDEPLOYMNET_CONTAINER_ID != '') {
-                                echo "Previous Deploymnet Found. Container Id ${DOCKER_PREVIOUSDEPLOYMNET_CONTAINER_ID}"
+                            if (dockerPreviousDeploymentContainerId != null && dockerPreviousDeploymentContainerId != '') {
+                                echo "Previous Deploymnet Found. Container Id ${dockerPreviousDeploymentContainerId}"
 
-                                echo "Stopping Container ${DOCKER_PREVIOUSDEPLOYMNET_CONTAINER_ID}"
-                                bat "docker stop ${DOCKER_PREVIOUSDEPLOYMNET_CONTAINER_ID}"
+                                echo "Stopping Container ${dockerPreviousDeploymentContainerId}"
+                                bat "docker stop ${dockerPreviousDeploymentContainerId}"
 
-                                echo "Removing Container ${DOCKER_PREVIOUSDEPLOYMNET_CONTAINER_ID}"
-                                bat "docker rm ${DOCKER_PREVIOUSDEPLOYMNET_CONTAINER_ID}"
+                                echo "Removing Container ${dockerPreviousDeploymentContainerId}"
+                                bat "docker rm ${dockerPreviousDeploymentContainerId}"
                             } else {
                                 echo 'Container Not Deployed Previously'
                             }
