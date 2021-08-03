@@ -11,15 +11,13 @@ pipeline {
         // Github Enironmant Varibales
         GITHUB_CREDENTIALS = 'GitHub'
         GITHUB_URL = 'https://github.com/guchhaitprasun/app_prasunguchhait.git'
-        // GITHUB_BRANCH = 'master'
+        // GITHUB_BRANCH = 'develop'
 
         // Docker Enviornment Variables
         DOCKER_CREDENTIALS = 'DockerHub'
-        DOCKER_REGISTRY = 'prasunguchhait/app-prasunguchhait'
-        DOCKER_CONTAINER_NAME = 'c-prasunguchhait'
-        DOCKER_PORT = null
-        DOCKER_PORT_MASTER = '7200:80'
-        DOCKER_PORT_DEVELOP = '7300:80'
+        DOCKER_REGISTRY = 'prasunguchhait/app-prasunguchhait-develop'
+        CONTAINER_NAME = 'c-prasunguchhait-develop'
+        DOCKER_PORT = '7300:80'
     }
 
     stages {
@@ -41,20 +39,6 @@ pipeline {
             }
         }
 
-        //Sonar qube analysis start
-        stage('Start sonarqube analysis') {
-            when {
-                branch 'master'
-            }
-
-            steps {
-                echo 'Sonar Analysis Begin'
-                withSonarQubeEnv('Test_Sonar') {
-                    bat "${SCANNER_HOME}/SonarScanner.MSBuild.exe begin /k:DevOps_WebAPI /d:sonar.cs.opencover.reportsPaths=DevOps_WebAPI.Test/coverage.opencover.xml /d:sonar.coverage.exclusions='**Test*.cs'"
-                }
-            }
-        }
-
         //Clean and Build solution
         stage('Clean & Build') {
             steps {
@@ -68,12 +52,8 @@ pipeline {
             }
         }
 
-        // Release Artifiacts
+        // Release Artifiacts 
         stage ('Release Artifiact') {
-            when {
-                branch 'develop'
-            }
-
             steps {
                 echo 'Publishing Project with Release configuration'
                 bat 'dotnet publish --configuration Release'
@@ -81,34 +61,7 @@ pipeline {
             }
         }
 
-        // Start Unit Testing
-        stage('Unit Testing') {
-            when {
-                branch 'master'
-            }
-            
-            steps {
-                echo 'Begin Unit Testing'
-                bat 'dotnet test DevOps_WebAPI.Test\\DevOps_WebAPI.Test.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=opencover'
-                echo 'Unit Testing Finished'
-            }
-        }
-
-        //Stop sonar qube analysis
-        stage('Stop sonarqube analysis') {
-            when {
-                branch 'master'
-            }
-
-            steps {
-                echo 'Sonar Analysis Finished'
-                withSonarQubeEnv('Test_Sonar') {
-                    bat "${SCANNER_HOME}/SonarScanner.MSBuild.exe end"
-                }
-            }
-        }
-
-        //Docker Image
+        //Build Docker Image
         stage ('Docker Image') {
             steps {
                 echo 'Building Docker Image'
@@ -117,13 +70,14 @@ pipeline {
             }
         }
 
-        stage('container') {
+        // Publish  to Docker Hub 
+        stage('Container') {
             parallel {
                 stage('Pre-Container Check') {
                     steps {
                         echo 'Checking if Container is previously deployed'
                         script {
-                            String dockerCommand = "docker ps -a -q -f name=${DOCKER_CONTAINER_NAME}-${BRANCH_NAME}"
+                            String dockerCommand = "docker ps -a -q -f name=${CONTAINER_NAME}"
                             String commandExecution = "${bat(returnStdout: true, script: dockerCommand)}"
                             DOCKER_PREVIOUSDEPLOYMNET_CONTAINER_ID = "${commandExecution.trim().readLines().drop(1).join(' ')}"
 
@@ -146,30 +100,24 @@ pipeline {
                 stage('Publish to Docker Hub') {
                     steps {
                         echo 'Tagging Docker Image'
-                        bat "docker tag i-${USERNAME}-${BRANCH_NAME} ${DOCKER_REGISTRY}-${BRANCH_NAME}:${BUILD_NUMBER}"
-                        bat "docker tag i-${USERNAME}-${BRANCH_NAME} ${DOCKER_REGISTRY}-${BRANCH_NAME}:latest"
+                        bat "docker tag i-${USERNAME}-${BRANCH_NAME} ${DOCKER_REGISTRY}:${BUILD_NUMBER}"
+                        bat "docker tag i-${USERNAME}-${BRANCH_NAME} ${DOCKER_REGISTRY}:latest"
 
                         echo 'Pushing Image to Docker Hub'
                         withDockerRegistry([credentialsId: env.DOCKER_CREDENTIALS, url: '']) {
-                            bat "docker push ${DOCKER_REGISTRY}-${BRANCH_NAME}:${BUILD_NUMBER}"
-                            bat "docker push ${DOCKER_REGISTRY}-${BRANCH_NAME}:latest"
+                            bat "docker push ${DOCKER_REGISTRY}:${BUILD_NUMBER}"
+                            bat "docker push ${DOCKER_REGISTRY}:latest"
                         }
                     }
                 }
             }
         }
 
+        // Deploy Docker Image to Docker 
         stage('Deploy Docker Image') {
             steps {
-                script {
-                    if (env.BRANCH_NAME == 'master'){
-                        DOCKER_PORT = DOCKER_PORT_MASTER
-                    } else {
-                        DOCKER_PORT = DOCKER_PORT_DEVELOP
-                    }
-                }
-                echo "Deploying docker Image ${DOCKER_PORT}"
-                bat "docker run --name ${DOCKER_CONTAINER_NAME}-${BRANCH_NAME} -d -p ${DOCKER_PORT} ${DOCKER_REGISTRY}-${BRANCH_NAME}:${BUILD_NUMBER}"
+                echo 'Deploying docker Image'
+                bat "docker run --name ${CONTAINER_NAME} -d -p ${DOCKER_PORT} ${DOCKER_REGISTRY}:${BUILD_NUMBER}"
             }
         }
     }
