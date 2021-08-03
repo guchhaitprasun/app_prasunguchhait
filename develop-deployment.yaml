@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: one-api-pod-develop
+  namespace: kubernetes-cluster-prasunguchhait
+  labels:
+    app: oneapi-develop
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: oneapi-develop
+  template:
+    metadata:
+      labels:
+        app: oneapi-develop
+    spec:
+      containers:
+      - name : oneapi-develop
+        image: prasunguchhait/app-prasunguchhait-develop:latest
+        ports:
+          - name: http
+            containerPort: 80
+            protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: one-api-service-develop
+  namespace: kubernetes-cluster-prasunguchhait
+  labels: 
+    app: one-api-service-develop
+spec:
+  type: NodePort
+  selector:
+    app: oneapi-develop
+  ports:
+    - protocol: TCP
+      nodePort: 30158
+      port: 80
+      targetPort: 80
