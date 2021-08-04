@@ -166,31 +166,49 @@ pipeline {
 
         stage('Deploy Docker Image') {
             steps {
-                script {
-                    dockerPort = null
-                    if (env.BRANCH_NAME == 'master'){
-                        dockerPort = env.DOCKER_PORT_MASTER
-                    } else {
-                        dockerPort = env.DOCKER_PORT_DEVELOP
-                    }
+                switch (env.BRANCH_NAME) {
+                    case 'master':
+                        echo "Deploying master branch docker Image on ${dockerPort}"
+                        bat "docker run --name ${DOCKER_CONTAINER_NAME}-${BRANCH_NAME} -d -p ${DOCKER_PORT_MASTER} ${DOCKER_REGISTRY}:${BRANCH_NAME}-${BUILD_NUMBER}"
+                    break
+                    case 'develop':
+                        echo "Deploying develop branch docker Image on ${dockerPort}"
+                        bat "docker run --name ${DOCKER_CONTAINER_NAME}-${BRANCH_NAME} -d -p ${DOCKER_PORT_DEVELOP} ${DOCKER_REGISTRY}:${BRANCH_NAME}-${BUILD_NUMBER}"
+                    break
+                    default :
+                        echo 'No Branch Match Found'
+                    break
                 }
-                echo "Deploying docker Image ${dockerPort}"
-                bat "docker run --name ${DOCKER_CONTAINER_NAME}-${BRANCH_NAME} -d -p ${dockerPort} ${DOCKER_REGISTRY}:${BRANCH_NAME}-${BUILD_NUMBER}"
             }
         }
 
         stage('Kubernetes Deployment') {
             steps {
                 script {
-                    manifestPattern = null
-                    if (env.BRANCH_NAME == 'master'){
-                        manifestPattern = env.GKE_MANIFEST_PATTERN_MASTER
-                    } else {
-                        manifestPattern = env.GKE_MANIFEST_PATTERN_DEVELOP
+                    withCredentials ([file(credentialsId: env.GKE_CREDENTIALS_ID, variable: 'GC_KEY')]) {
+                        echo 'Authenticating From Google Cloud.....'
+                        bat "gcloud auth activate-service-account --key-file=${GC_KEY}"
+                        echo 'Authentication complete'
+
+                        echo 'Connecting To Cluster'
+                        bat "gcloud container clusters get-credentials one-api-cluster --region us-central1 --project ${GKE_PROJECT_ID}"
+                        echo 'Cluster Connection complete'
                     }
                 }
-                echo "Deploying container to  Google Kubernetes Engine for ${env.BRANCH_NAME} brnach using ${manifestPattern} manifest pattern "
-                step ([$class: 'KubernetesEngineBuilder', projectId: env.GKE_PROJECT_ID, clusterName: env.GKE_CLUSTER_NAME, location: env.GKE_CLUSTER_LOCATION, manifestPattern: "${manifestPattern}", credentialsId: env.GKE_CREDENTIALS_ID, verifyDeployments: true])
+
+                switch (env.BRANCH_NAME) {
+                    case 'master':
+                        echo "Deploying container to  Google Kubernetes Engine for ${BRANCH_NAME} branch using ${GKE_MANIFEST_PATTERN_MASTER} manifest pattern"
+                        bat "kubectl apply -f ${GKE_MANIFEST_PATTERN_MASTER}"
+                    break
+                    case 'develop':
+                        echo "Deploying container to  Google Kubernetes Engine for ${BRANCH_NAME} branch using ${GKE_MANIFEST_PATTERN_DEVELOP} manifest pattern"
+                        bat "kubectl apply -f ${GKE_MANIFEST_PATTERN_DEVELOP}"
+                    break
+                    default :
+                        echo 'No Branch Match Found'
+                    break
+                }
             }
         }
     }
