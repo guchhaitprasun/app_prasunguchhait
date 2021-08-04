@@ -151,13 +151,13 @@ pipeline {
                 stage('Publish to Docker Hub') {
                     steps {
                         echo 'Tagging Docker Image'
-                        bat "docker tag i-${USERNAME}-${BRANCH_NAME} ${DOCKER_REGISTRY}-${BRANCH_NAME}:${BUILD_NUMBER}"
-                        bat "docker tag i-${USERNAME}-${BRANCH_NAME} ${DOCKER_REGISTRY}-${BRANCH_NAME}:latest"
+                        bat "docker tag i-${USERNAME}-${BRANCH_NAME} ${DOCKER_REGISTRY}:${BUILD_NUMBER}"
+                        bat "docker tag i-${USERNAME}-${BRANCH_NAME} ${DOCKER_REGISTRY}:${BRANCH_NAME}-latest"
 
                         echo 'Pushing Image to Docker Hub'
                         withDockerRegistry([credentialsId: env.DOCKER_CREDENTIALS, url: '']) {
-                            bat "docker push ${DOCKER_REGISTRY}-${BRANCH_NAME}:${BUILD_NUMBER}"
-                            bat "docker push ${DOCKER_REGISTRY}-${BRANCH_NAME}:latest"
+                            bat "docker push ${DOCKER_REGISTRY}:${BUILD_NUMBER}"
+                            bat "docker push ${DOCKER_REGISTRY}:${BRANCH_NAME}-latest"
                         }
                     }
                 }
