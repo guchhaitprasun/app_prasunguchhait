@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: one-api-pod-develop
-  namespace: kubernetes-cluster-prasunguchhait
+  # namespace: kubernetes-cluster-prasunguchhait
   labels:
     app: oneapi-develop
 spec:
@@ -27,7 +27,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: one-api-service-develop
-  namespace: kubernetes-cluster-prasunguchhait
+  # namespace: kubernetes-cluster-prasunguchhait
   labels: 
     app: one-api-service-develop
 spec:
