@@ -190,6 +190,7 @@ pipeline {
                     }
                 }
                 echo "Deploying container to  Google Kubernetes Engine for ${env.BRANCH_NAME} brnach using ${manifestPattern} manifest pattern "
+                bat "kubectl config view"
                 step ([$class: 'KubernetesEngineBuilder', projectId: env.GKE_PROJECT_ID, clusterName: env.GKE_CLUSTER_NAME, location: env.GKE_CLUSTER_LOCATION, manifestPattern: "${manifestPattern}", credentialsId: env.GKE_CREDENTIALS_ID, verifyDeployments: true])
             }
         }
