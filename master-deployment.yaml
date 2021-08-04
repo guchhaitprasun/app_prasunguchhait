@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name : oneapi-master
-        image: prasunguchhait/app-prasunguchhait-master:latest
+        image: prasunguchhait/app-prasunguchhait:master-latest
         ports:
           - name: http
             containerPort: 80

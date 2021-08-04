@@ -151,13 +151,13 @@ pipeline {
                 stage('Publish to Docker Hub') {
                     steps {
                         echo 'Tagging Docker Image'
-                        bat "docker tag i-${USERNAME}-${BRANCH_NAME} ${DOCKER_REGISTRY}-${BRANCH_NAME}:${BUILD_NUMBER}"
-                        bat "docker tag i-${USERNAME}-${BRANCH_NAME} ${DOCKER_REGISTRY}-${BRANCH_NAME}:latest"
+                        bat "docker tag i-${USERNAME}-${BRANCH_NAME} ${DOCKER_REGISTRY}:${BUILD_NUMBER}"
+                        bat "docker tag i-${USERNAME}-${BRANCH_NAME} ${DOCKER_REGISTRY}:${BRANCH_NAME}-latest"
 
                         echo 'Pushing Image to Docker Hub'
                         withDockerRegistry([credentialsId: env.DOCKER_CREDENTIALS, url: '']) {
-                            bat "docker push ${DOCKER_REGISTRY}-${BRANCH_NAME}:${BUILD_NUMBER}"
-                            bat "docker push ${DOCKER_REGISTRY}-${BRANCH_NAME}:latest"
+                            bat "docker push ${DOCKER_REGISTRY}:${BUILD_NUMBER}"
+                            bat "docker push ${DOCKER_REGISTRY}:${BRANCH_NAME}-latest"
                         }
                     }
                 }
@@ -190,7 +190,6 @@ pipeline {
                     }
                 }
                 echo "Deploying container to  Google Kubernetes Engine for ${env.BRANCH_NAME} brnach using ${manifestPattern} manifest pattern "
-                bat "kubectl config view"
                 step ([$class: 'KubernetesEngineBuilder', projectId: env.GKE_PROJECT_ID, clusterName: env.GKE_CLUSTER_NAME, location: env.GKE_CLUSTER_LOCATION, manifestPattern: "${manifestPattern}", credentialsId: env.GKE_CREDENTIALS_ID, verifyDeployments: true])
             }
         }
