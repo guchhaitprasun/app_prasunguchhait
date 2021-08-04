@@ -22,7 +22,7 @@ pipeline {
         GKE_PROJECT_ID = 'devopsoneapi'
         GKE_CLUSTER_NAME = 'one-api-cluster'
         GKE_CLUSTER_LOCATION = 'us-central1'
-        GKE_CREDENTIALS_ID = 'GKECredentials_OneAPI'
+        GKE_CREDENTIALS_ID = 'GKECredentialsFile'
         GKE_MANIFEST_PATTERN_MASTER = 'master-deployment.yaml'
         GKE_MANIFEST_PATTERN_DEVELOP = 'develop-deployment.yaml'
     }
