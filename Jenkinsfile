@@ -165,20 +165,18 @@ pipeline {
         }
 
         stage('Deploy Docker Image') {
-            steps {
-                switch (env.BRANCH_NAME) {
-                    case 'master':
-                        echo "Deploying master branch docker Image on ${dockerPort}"
-                        bat "docker run --name ${DOCKER_CONTAINER_NAME}-${BRANCH_NAME} -d -p ${DOCKER_PORT_MASTER} ${DOCKER_REGISTRY}:${BRANCH_NAME}-${BUILD_NUMBER}"
-                    break
-                    case 'develop':
-                        echo "Deploying develop branch docker Image on ${dockerPort}"
-                        bat "docker run --name ${DOCKER_CONTAINER_NAME}-${BRANCH_NAME} -d -p ${DOCKER_PORT_DEVELOP} ${DOCKER_REGISTRY}:${BRANCH_NAME}-${BUILD_NUMBER}"
-                    break
-                    default :
-                        echo 'No Branch Match Found'
-                    break
-                }
+            switch (env.BRANCH_NAME) {
+                case 'master':
+                    echo "Deploying master branch docker Image on ${dockerPort}"
+                    bat "docker run --name ${DOCKER_CONTAINER_NAME}-${BRANCH_NAME} -d -p ${DOCKER_PORT_MASTER} ${DOCKER_REGISTRY}:${BRANCH_NAME}-${BUILD_NUMBER}"
+                break
+                case 'develop':
+                    echo "Deploying develop branch docker Image on ${dockerPort}"
+                    bat "docker run --name ${DOCKER_CONTAINER_NAME}-${BRANCH_NAME} -d -p ${DOCKER_PORT_DEVELOP} ${DOCKER_REGISTRY}:${BRANCH_NAME}-${BUILD_NUMBER}"
+                break
+                default :
+                    echo 'No Branch Match Found'
+                break
             }
         }
 
@@ -195,20 +193,19 @@ pipeline {
                         echo 'Cluster Connection complete'
                     }
                 }
-
-                switch (env.BRANCH_NAME) {
-                    case 'master':
-                        echo "Deploying container to  Google Kubernetes Engine for ${BRANCH_NAME} branch using ${GKE_MANIFEST_PATTERN_MASTER} manifest pattern"
-                        bat "kubectl apply -f ${GKE_MANIFEST_PATTERN_MASTER}"
-                    break
-                    case 'develop':
-                        echo "Deploying container to  Google Kubernetes Engine for ${BRANCH_NAME} branch using ${GKE_MANIFEST_PATTERN_DEVELOP} manifest pattern"
-                        bat "kubectl apply -f ${GKE_MANIFEST_PATTERN_DEVELOP}"
-                    break
-                    default :
-                        echo 'No Branch Match Found'
-                    break
-                }
+            }
+            switch (env.BRANCH_NAME) {
+                case 'master':
+                    echo "Deploying container to  Google Kubernetes Engine for ${BRANCH_NAME} branch using ${GKE_MANIFEST_PATTERN_MASTER} manifest pattern"
+                    bat "kubectl apply -f ${GKE_MANIFEST_PATTERN_MASTER}"
+                break
+                case 'develop':
+                    echo "Deploying container to  Google Kubernetes Engine for ${BRANCH_NAME} branch using ${GKE_MANIFEST_PATTERN_DEVELOP} manifest pattern"
+                    bat "kubectl apply -f ${GKE_MANIFEST_PATTERN_DEVELOP}"
+                break
+                default :
+                    echo 'No Branch Match Found'
+                break
             }
         }
     }
