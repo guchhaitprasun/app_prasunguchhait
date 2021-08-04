@@ -1,3 +1,7 @@
+# Dockerfile to build and generate dlls
+# Author: PRASUN GUCHHAIT <prasun.guchhait@nagarro.com>
+
+# Add Reference from microsoft container registry
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1 as build-env
 LABEL MAINTAINER="PRASUNGUCHHAIT"
 WORKDIR /app

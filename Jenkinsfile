@@ -1,9 +1,15 @@
+/*
+    Groovy Script For Jenkins Pipeline
+    AUTHOR: Prasun Guchhait <prasun.guchhait@nagarro.com>
+*/
+
 /* groovylint-disable DuplicateStringLiteral, LineLength, NestedBlockDepth, NoDef */
 /* groovylint-disable-next-line CompileStatic */
 pipeline {
     agent any
 
     environment {
+        // Sonar Scanner
         SCANNER_HOME = tool name: 'sonar_scanner_dotnet'
         USERNAME = 'prasunguchhait'
 
@@ -49,6 +55,7 @@ pipeline {
         }
 
         //Sonar qube analysis start
+        //uses opencover xml generated using coverlet
         stage('Start sonarqube analysis') {
             when {
                 branch 'master'
@@ -124,6 +131,9 @@ pipeline {
             }
         }
 
+        // Parallel Steps to
+        // Pre-container Check:  To Check if container is deployed on particular Port and to remove it
+        // Publis to Docker Hub: To Push the code to Docker hub
         stage('container') {
             parallel {
                 stage('Pre-Container Check') {
@@ -166,6 +176,7 @@ pipeline {
             }
         }
 
+        // Run Deployed Docker Image
         stage('Deploy Docker Image') {
             steps {
                 script {
@@ -180,6 +191,10 @@ pipeline {
             }
         }
 
+        // Kubernetes Deployment
+        // Connects to google Cloud using json file stored in Jenkins Credentials
+        // Connect to Cluster using project id
+        // Apply Deploymnets & Services
         stage('Kubernetes Deployment') {
             steps {
                 script {
