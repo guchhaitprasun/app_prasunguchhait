@@ -23,8 +23,10 @@ pipeline {
         GKE_CLUSTER_NAME = 'one-api-cluster'
         GKE_CLUSTER_LOCATION = 'us-central1'
         GKE_CREDENTIALS_ID = 'GKECredentialsFile'
-        GKE_MANIFEST_PATTERN_MASTER = 'master-deployment.yaml'
-        GKE_MANIFEST_PATTERN_DEVELOP = 'develop-deployment.yaml'
+        GKE_DEPLOYMENT_MAINFEST_PATTERN_MASTER = 'k8Deployment/master-deployment.yaml'
+        GKE_DEPLOYMENT_MANIFEST_PATTERN_DEVELOP = 'k8Deployment/develop-deployment.yaml'
+        GKE_SERVICE_MAINFEST_PATTERN_MASTER = 'k8Deployment/master-service.yaml'
+        GKE_SERVICE_MANIFEST_PATTERN_DEVELOP = 'k8Deployment/develop-service.yaml'
     }
 
     stages {
@@ -191,15 +193,23 @@ pipeline {
                         echo 'Cluster Connection complete'
                     }
 
-                    manifestPattern = null
+                    deploymentMainfestPatter = null
+                    serviceMainfestPattern = null
                     if (env.BRANCH_NAME == 'master'){
-                        manifestPattern = env.GKE_MANIFEST_PATTERN_MASTER
+                        deploymentMainfestPatter = env.GKE_DEPLOYMENT_MAINFEST_PATTERN_MASTER
+                        serviceMainfestPattern = env.GKE_SERVICE_MAINFEST_PATTERN_MASTE
                     } else {
-                        manifestPattern = env.GKE_MANIFEST_PATTERN_DEVELOP
+                        deploymentMainfestPatter = env.GKE_DEPLOYMENT_MANIFEST_PATTERN_DEVELOP
+                        serviceMainfestPattern = env.GKE_SERVICE_MANIFEST_PATTERN_DEVELOP
                     }
                 }
-                echo "Deploying container to  Google Kubernetes Engine for ${env.BRANCH_NAME} brnach using ${manifestPattern} manifest pattern "
-                bat "kubectl apply -f ${manifestPattern}"
+                echo "Deploying container to  Google Kubernetes Engine for ${env.BRANCH_NAME}"
+
+                echo "Applying Deployment Mainfest ${deploymentMainfestPatter}"
+                bat "kubectl apply -f ${deploymentMainfestPatter}"
+
+                echo "Applying Service Mainfest ${serviceMainfestPattern}"
+                bat "kubectl apply -f ${serviceMainfestPattern}"
             }
         }
     }

@@ -1,0 +1,6 @@
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: kubernetes-cluster-prasunguchhait
+  labels:
+    name: kubernetes-cluster-prasunguchhait

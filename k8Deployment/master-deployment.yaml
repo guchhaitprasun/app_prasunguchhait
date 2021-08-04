@@ -22,20 +22,3 @@ spec:
           - name: http
             containerPort: 80
             protocol: TCP
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: one-api-service-master
-  namespace: kubernetes-cluster-prasunguchhait
-  labels: 
-    app: one-api-service-master
-spec:
-  type: NodePort
-  selector:
-    app: oneapi-master
-  ports:
-    - protocol: TCP
-      nodePort: 30157
-      port: 80
-      targetPort: 80
