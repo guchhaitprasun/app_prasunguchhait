@@ -197,7 +197,7 @@ pipeline {
                     serviceMainfestPattern = null
                     if (env.BRANCH_NAME == 'master'){
                         deploymentMainfestPatter = env.GKE_DEPLOYMENT_MAINFEST_PATTERN_MASTER
-                        serviceMainfestPattern = env.GKE_SERVICE_MAINFEST_PATTERN_MASTE
+                        serviceMainfestPattern = env.GKE_SERVICE_MAINFEST_PATTERN_MASTER
                     } else {
                         deploymentMainfestPatter = env.GKE_DEPLOYMENT_MANIFEST_PATTERN_DEVELOP
                         serviceMainfestPattern = env.GKE_SERVICE_MANIFEST_PATTERN_DEVELOP
