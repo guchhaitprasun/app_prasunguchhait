@@ -56,7 +56,7 @@ namespace DevOps_WebAPI
 
             app.UseSwagger();
             app.UseSwaggerUI(c => {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "NAGP OneAPI Definition");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "NAGP OneAPI Definition develop");
             });
         }
     }
