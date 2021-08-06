@@ -20,7 +20,7 @@ This pipeline also take use of
 ## Pipeline
 Using this repositiory I created a multi-branch pipeline, with master and develop branches. 
 
-![](DocumentationResources/pipeline.png)
+![](DocumentationResources/Pipeline.png)
 
 ## Exposed Ports
 List of all the running appliaction & their ports
