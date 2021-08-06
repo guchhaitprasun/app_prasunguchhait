@@ -18,6 +18,7 @@ spec:
       containers:
       - name : oneapi-master
         image: prasunguchhait/app-prasunguchhait:master-latest
+        imagePullPolicy: Always
         ports:
           - name: http
             containerPort: 80
